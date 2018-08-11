@@ -18,10 +18,26 @@ def findHash(ratios):
 		customHash += hashChars[int(baseNumber)]
 
 		decimalPortion = x % 1
-		if decimalPortion < 0.5:
+		if decimalPortion < 0.1:
 			customHash += '0'
-		else:
+		elif decimalPortion < 0.2:
 			customHash += '1'
+		elif decimalPortion < 0.3:
+			customHash += '2'
+		elif decimalPortion < 0.4:
+			customHash += '3'
+		elif decimalPortion < 0.5:
+			customHash += '4'
+		elif decimalPortion < 0.6:
+			customHash += '5'
+		elif decimalPortion < 0.7:
+			customHash += '6'
+		elif decimalPortion < 0.8:
+			customHash += '7'
+		elif decimalPortion < 0.9:
+			customHash += '8'
+		else:
+			customHash += '9'
 
 	print(customHash)
 

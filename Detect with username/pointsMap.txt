@@ -1,0 +1,45 @@
+#Always take ratios
+
+#TEST RESULTS
+BOBBY'S HASH   : f3g3h4i1b0c9d8d8d3b4c7c1b3d3c7c0e4d1b4e3d2b6
+				 f4g3h4i3b0d0d9d9d3b3c7c0b2d1c6c0e5d2b4e0d1b5
+				 f5g5h6i3b0c8d7d7d2b4c6c0b2d1c5b9e2d0b5e0d1b6
+				 f5g4h6i2b0c9d8d8d3b3c7c0b3d2c6c0e4d1b4e2d2b5
+
+CHINMAY'S HASH : g2h2i4j3b0c9d8d9d9b7d2c5b5d7d0c3f1d7b7e9d6b6
+				 g3h2i5j1b0c9d9d9e0b7d2c5b5d8d1c4f2d8b7f0d7b6
+				 g3h2i5j2b0c9d9d9e0b7d3c5b5d8d1c3f2d8b8f0d7b7
+
+SUMEET'S HASH  : g8i3j9k5b0d0e5e5e3b8d5c7b5d9d1c4f6d8b4f0d5b3
+				 g7i1j9l0b0d0e4e4e5b9d6c8b5e0d3c5f7e0b5f2d6b4
+				 g7i1j7k1b0d0e5e5e5b9d7c8b5e1d3c5f7d9b4f3d7b4
+
+
+BASE LINE : 28 27
+#Base line will always be 28 27
+#No need to compute this distance again
+
+#Hook point : 27
+
+#Jawline 8 computations
+1 27
+2 27
+3 27
+4 27
+5 27
+6 27
+7 27
+8 27
+
+#Nose 8 computations
+28 27
+29 27
+30 27
+31 27
+32 27
+33 27
+34 27
+35 27
+
+#Eyes
+
