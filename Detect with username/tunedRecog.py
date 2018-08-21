@@ -10,6 +10,7 @@ from subprocess import call
 import os
 import threading
 
+
 # Very simeple hash generator according to the face
 def findHash(ratios):
 	customHash = ""

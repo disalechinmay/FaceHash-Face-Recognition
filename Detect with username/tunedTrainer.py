@@ -10,6 +10,7 @@ from subprocess import call
 import os
 import array
 
+
 # Basically finds distance between 2 points
 # Arguments:
 # 	-> tempshape: DLIB's predictor which plots facial landmark points
