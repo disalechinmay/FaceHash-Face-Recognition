@@ -10,7 +10,10 @@ from subprocess import call
 import os
 import array
 
-#Basically finds distance between 2 points
+# Basically finds distance between 2 points
+# Arguments:
+# 	-> tempshape: DLIB's predictor which plots facial landmark points
+# 	-> point1 & point2: Points between which distance is to be found out
 def getDistance(tempshape, point1, point2):
 	point1x = tempshape.part(point1).x
 	point1y = tempshape.part(point1).y
@@ -22,20 +25,24 @@ def getDistance(tempshape, point1, point2):
 	distance = math.sqrt(dx + dy)
 	return distance
 
-#Importing Haar cascade and dlib's facial landmarks detector
+#Importing Haar cascade and DLIB's facial landmarks detector
 face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
 predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
 
 targetPoints = []
 
-#Read map.txt
+# Read map.txt -> Can be tuned!
+# map.txt holds a collection of points which will be used to recognize a face
+# map.txt holds a list of pairs between which will define a set of lines to be considered by recognizer
 lines = [line.rstrip('\n') for line in open('map.txt')]
 for line in lines:
 	tempList = line.split()
 	targetPoints.append(int(tempList[0]))
+
+# Holds number of ratios as defined by the map
 totalTargets = int(len(targetPoints))
 
-#Start video
+# Start video capture (webcam)
 video = cv2.VideoCapture(0)
 
 #Set name of new user

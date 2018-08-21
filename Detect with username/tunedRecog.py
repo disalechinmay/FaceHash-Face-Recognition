@@ -10,6 +10,7 @@ from subprocess import call
 import os
 import threading
 
+# Very simeple hash generator according to the face
 def findHash(ratios):
 	customHash = ""
 	hashChars = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
@@ -18,31 +19,17 @@ def findHash(ratios):
 		customHash += hashChars[int(baseNumber)]
 
 		decimalPortion = x % 1
-		if decimalPortion < 0.1:
+		if decimalPortion < 0.5:
 			customHash += '0'
-		elif decimalPortion < 0.2:
-			customHash += '1'
-		elif decimalPortion < 0.3:
-			customHash += '2'
-		elif decimalPortion < 0.4:
-			customHash += '3'
-		elif decimalPortion < 0.5:
-			customHash += '4'
-		elif decimalPortion < 0.6:
-			customHash += '5'
-		elif decimalPortion < 0.7:
-			customHash += '6'
-		elif decimalPortion < 0.8:
-			customHash += '7'
-		elif decimalPortion < 0.9:
-			customHash += '8'
 		else:
-			customHash += '9'
+			customHash += '1'
 
 	print(customHash)
 
-
-#Basically finds distance between 2 points
+# Basically finds distance between 2 points
+# Arguments:
+# 	-> tempshape: DLIB's predictor which plots facial landmark points
+# 	-> point1 & point2: Points between which distance is to be found out
 def getDistance(tempshape, point1, point2):
 	point1x = tempshape.part(point1).x
 	point1y = tempshape.part(point1).y
@@ -55,11 +42,11 @@ def getDistance(tempshape, point1, point2):
 	return distance
 
 
-#Importing Haar cascade and dlib's facial landmarks detector
+#Importing Haar cascade and DLIB's facial landmarks detector
 face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
 predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
 
-#Precision in %
+# Precision in % -> Tunes the recognizer according to our need
 precision = 0.95
 
 targetPoints = []
@@ -67,6 +54,8 @@ targetPoints = []
 currentUser = raw_input("Enter name of current user : ")
 #currentUser = "Chinmay"
 userRatios = []
+userRatiosLow = []
+userRatiosHigh = []
 
 #Read dataStore.txt
 lines = [line.rstrip('\n') for line in open('dataStore.txt')]
@@ -75,6 +64,10 @@ for line in lines:
 	if (tempList[0] == currentUser):
 		for i in range(1, len(tempList)):
 			userRatios.append(float(tempList[i]))
+			tempCalc = float(tempList[i]) * (1-(1-precision))
+			userRatiosLow.append(float(tempCalc))
+			tempCalc = float(tempList[i]) * (1+(1-precision))
+			userRatiosHigh.append(float(tempCalc))
 
 if (len(userRatios) == 0):
 	print("User not found!")
@@ -82,14 +75,18 @@ if (len(userRatios) == 0):
 else:
 	print(userRatios)
 
-#Read map.txt
+# Read map.txt -> Can be tuned!
+# map.txt holds a collection of points which will be used to recognize a face
+# map.txt holds a list of pairs between which will define a set of lines to be considered by recognizer
 lines = [line.rstrip('\n') for line in open('map.txt')]
 for line in lines:
 	tempList = line.split()
 	targetPoints.append(int(tempList[0]))
 
+# Holds number of ratios as defined by the map
 totalTargets = int(len(targetPoints))
 
+# Start video capture (webcam)
 video = cv2.VideoCapture(0)
 
 while(True):
@@ -133,7 +130,7 @@ while(True):
 			for x in range(0, totalTargets):
 				#os.system('clear')
 					
-				if(ratios[x] > userRatios[x]*(1-(1 - precision)) and ratios[x] < userRatios[x]*(1+(1 - precision))):
+				if(ratios[x] > userRatiosLow[x]) and (ratios[x] < userRatiosHigh[x]):
 					foundFlag = foundFlag + 1
 					if(x % 3 == 0):
 						print("\nP {}: {}\t[TRUE]\t".format(x+1, ratios[x])),
