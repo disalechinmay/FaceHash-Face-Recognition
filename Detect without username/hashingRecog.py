@@ -14,15 +14,17 @@ def findHash(ratios):
 	customHash = ""
 	hashChars = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
 	for x in ratios:
-		baseNumber = str(x).split('.')[0]
+		tempx = x / 1
+		#print(tempx)
+		baseNumber = str(tempx).split('.')[0]
 		customHash += hashChars[int(baseNumber)]
-
-		decimalPortion = x % 1
+		'''
+		decimalPortion = tempx % 1
 		if decimalPortion < 0.5:
 			customHash += '0'
 		else:
 			customHash += '1'
-
+		'''
 	return customHash
 
 
@@ -58,6 +60,77 @@ totalTargets = int(len(targetPoints))
 
 video = cv2.VideoCapture(0)
 
+
+def recognizeFace(masterPath, fileName):
+	print ("Checking for {}".format(fileName)),
+	os.chdir(masterPath)
+	userRatios = []
+	userRatiosLow = []
+	userRatiosHigh = []
+
+	#Read user's file
+	lines = [line.rstrip('\n') for line in open(fileName)]
+	for line in lines:
+		tempList = line.split()
+		for i in range(1, len(tempList)):
+			userRatios.append(float(tempList[i]))
+			tempCalc = float(tempList[i]) * (1-(1-precision))
+			userRatiosLow.append(float(tempCalc))
+			tempCalc = float(tempList[i]) * (1+(1-precision))
+			userRatiosHigh.append(float(tempCalc))
+
+	if len(userRatios) == 0:
+		return
+		
+	global video
+	ret, frame = video.read()
+
+	#Convert the frame to grayscale
+	grayFrame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
+	#Activating Haar cascade classifier to detect faces
+	faces = face_cascade.detectMultiScale(grayFrame, scaleFactor = 1.5, minNeighbors = 5)
+
+	for(x, y, w, h) in faces :
+		pillowImage = Image.fromarray(frame[y:y+h, x:x+w])
+		#Resizing dimensions
+		resizedHeight = 300
+		resizedWidth = 300
+		######
+		faceCropped = np.array(pillowImage.resize((resizedHeight, resizedWidth), Image.ANTIALIAS))
+
+		#Initialize dlib's rectangle to start plotting points over shape of the face
+		dlibRect = dlib.rectangle(0, 0, resizedHeight, resizedWidth)
+		shape = predictor(cv2.cvtColor(faceCropped, cv2.COLOR_BGR2GRAY), dlibRect)
+		shapeCopy = shape
+		shape = face_utils.shape_to_np(shape)
+
+		for (name, (i, j)) in face_utils.FACIAL_LANDMARKS_IDXS.items():
+			baseLine = getDistance(shapeCopy, 28, 27)
+			ratios = []
+
+			for x in targetPoints:
+				currentLine = getDistance(shapeCopy, x, 27)
+				currentRatio = float(currentLine)/float(baseLine)
+				ratios.append(currentRatio)
+
+			foundFlag = 0
+
+			for x in range(0, totalTargets):
+				if(ratios[x] > userRatiosLow[x]) and (ratios[x] < userRatiosHigh[x]):
+					foundFlag = foundFlag + 1				
+				else:
+					break
+
+			if (foundFlag == totalTargets):
+				print(" : TRUE")
+				return True
+			else:
+				print(" : FALSE")
+				return False
+
+
+
 while(True):
 	ret, frame = video.read()
 	cv2.imshow('Original video feed', frame)
@@ -84,7 +157,7 @@ while(True):
 
 		for (name, (i, j)) in face_utils.FACIAL_LANDMARKS_IDXS.items():
 			cv2.imshow('Detected face', faceCropped)
-			os.system('clear')
+			#os.system('clear')
 
 			baseLine = getDistance(shapeCopy, 28, 27)
 			ratios = []
@@ -95,11 +168,11 @@ while(True):
 				ratios.append(currentRatio)
 
 			computedHash = findHash(ratios)
-			print(computedHash)
+			#print(computedHash)
 
-			splitHash = [computedHash[i:i+2] for i in range(0, len(computedHash), 2)]
+			splitHash = [computedHash[i:i+1] for i in range(0, len(computedHash), 2)]
 
-			print(splitHash)
+			#print(splitHash)
 
 			path = ""
 			for x in splitHash:
@@ -110,10 +183,12 @@ while(True):
 
 			if os.path.exists(path):
 				returnVal = os.listdir(masterPath)
-				print(returnVal[0])
-				exit(0)
-			else:
-				print("User not found!")
+
+				if recognizeFace(masterPath, returnVal[0]) :
+					print(returnVal[0])
+					exit(0)
+				else:
+					print("User not found!")
 
 			#print(os.listdir(masterPath))
 
@@ -122,6 +197,7 @@ while(True):
 
 	if cv2.waitKey(20) & 0xFF == ord('q') :
 		break
+
 
 video.release()
 cv2.destroyAllWindows()

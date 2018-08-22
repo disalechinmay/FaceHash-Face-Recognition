@@ -4,15 +4,17 @@ def findHash(ratios):
 	customHash = ""
 	hashChars = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
 	for x in ratios:
-		baseNumber = str(x).split('.')[0]
+		tempx = x / 1
+		#print(tempx)
+		baseNumber = str(tempx).split('.')[0]
 		customHash += hashChars[int(baseNumber)]
-
-		decimalPortion = x % 1
+		'''
+		decimalPortion = tempx % 1
 		if decimalPortion < 0.5:
 			customHash += '0'
 		else:
 			customHash += '1'
-
+		'''
 	return customHash
 
 #Read dataStore.txt
@@ -33,7 +35,7 @@ for line in lines:
 	computedHash = findHash(finalRatios)
 	print(computedHash)
 
-	splitHash = [computedHash[i:i+2] for i in range(0, len(computedHash), 2)]
+	splitHash = [computedHash[i:i+1] for i in range(0, len(computedHash), 2)]
 
 	print(splitHash)
 
@@ -50,7 +52,9 @@ for line in lines:
 		os.makedirs(path)
 
 	os.chdir(path)
-	open(userName, "w+")
+	fileHandler = open(userName, "w+")
+	fileHandler.write("%s" % line)
+	fileHandler.close()
 
 	#print(os.listdir(masterPath))
 
