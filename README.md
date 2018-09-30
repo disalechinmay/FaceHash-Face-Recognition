@@ -1,15 +1,15 @@
 # Face-Recognition
 
-This project is aimed towards creation of facial recognition system which could be used in a distributed environment through hashing.
+How to use it?
 
-Project is divided into two modules:
+First of all install all the requirements.
+	pip install -r requirements.txt
 
-MODULE I : Face recognition system which takes in username and check if the recognised face is correct according to the username.
+Save the following file as 'haarcascade_frontalface_default.xml':
+	https://raw.githubusercontent.com/opencv/opencv/master/data/haarcascades/haarcascade_frontalface_default.xml
 
-	( Check /"Detect with username" directory )
+Download 'shape_predictor_68_face_landmarks.dat' from:
+	http://dlib.net/files/
 
-
-
-MODULE II : Face recognition system which checks recognised face against all faces available in our trained data source.
-
-	( Check /"Detect without username" directory )
+	Run train.py first to create a model for entered username.
+	Then run recognize.py
